@@ -6,7 +6,7 @@ public class Main {
 //        c.connect();
 //        c.sendMessage();
 //        c.disconnect();
-        FileClient fc = new FileClient("localhost", 5501, "pliki\\");
+        FileClient fc = new FileClient("localhost", 5501, "Client/files/");
         fc.connect();
         fc.sendFileToServer();
         fc.getFileFromServer();

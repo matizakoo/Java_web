@@ -15,7 +15,7 @@ public class FileServer {
     public FileServer(int port){
         try {
             this.serverSocket = new ServerSocket(port);
-            this.defaultLocation = "pliki_server\\";
+            this.defaultLocation = "Server/filesserver/";
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,7 +44,7 @@ public class FileServer {
     }
 
     public void sendFileToClient(){
-        File file = new File( defaultLocation + "20535.pdf");
+        File file = new File( defaultLocation + "text.txt");
         //
         System.out.println("Przygotowania do wysłania pliku");
         byte[] fileNameBytes = file.getName().getBytes(StandardCharsets.UTF_8);

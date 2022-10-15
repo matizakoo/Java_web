@@ -35,9 +35,9 @@ public class FileClient {
     }
 
     public void sendFileToServer(){
-        File file = new File("pliki\\file.txt");
+        File file = new File("Client/files/file.txt");
         //
-        System.out.println("Przygotowania do wysłania pliku");
+        System.out.println("Prepare files to send data");
         byte[] fileNameBytes = file.getName().getBytes(StandardCharsets.UTF_8);
         int fileNameLength = file.getName().length();
         //
