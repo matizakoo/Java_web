@@ -82,7 +82,7 @@ public class FileClient {
                     byte[] fileContentBytes = new byte[(int) fileContentLength];
                     dataInputStream.readFully(fileContentBytes);
                     FileOutputStream fileOut = new FileOutputStream(
-                            new File(defaultLocation + fileName));
+                            defaultLocation + fileName);
                     fileOut.write(fileContentBytes);
                     fileOut.flush();
                     fileOut.close();

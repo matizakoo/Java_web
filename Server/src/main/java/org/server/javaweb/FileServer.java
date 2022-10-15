@@ -41,9 +41,6 @@ public class FileServer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
         }
     }
 
