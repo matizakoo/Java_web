@@ -83,12 +83,12 @@ public class FileServer {
                         fileNameLength,
                         StandardCharsets.UTF_8);
                 long fileContentLength = dataInputStream.readLong();
-                // sprawdzam czy plik ma jakąś zawartość
+                // Checking if file is empty
                 if (fileContentLength > 0){
                     byte[] fileContentBytes = new byte[(int) fileContentLength];
                     dataInputStream.readFully(fileContentBytes);
                     FileOutputStream fileOut = new FileOutputStream(
-                            new File(defaultLocation + fileName));
+                            (defaultLocation + fileName));
                     fileOut.write(fileContentBytes);
                     fileOut.flush();
                     fileOut.close();
