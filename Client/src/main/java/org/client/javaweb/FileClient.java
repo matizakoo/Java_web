@@ -1,5 +1,9 @@
 package org.client.javaweb;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -12,22 +16,22 @@ public class FileClient {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
     private String defaultLocation;
+    private Logger logger = LoggerFactory.getLogger(FileClient.class);
 
-
-    public FileClient(String host, int port, String location){
+    public FileClient(String host, int port, String defaultLocation){
         this.host = host;
         this.port = port;
-        this.defaultLocation = location;
+        this.defaultLocation = defaultLocation;
     }
 
     public void connect(){
         try {
             InetAddress address = InetAddress.getByName(host);
-            this.socket = new Socket(address, this.port);
+            socket = new Socket(address, port);
             if (socket.isConnected()){
-                System.out.println("Udało się nawiązać połączenie ");
-                this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                this.dataInputStream = new DataInputStream(socket.getInputStream());
+                logger.info("Connected with server");
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                dataInputStream = new DataInputStream(socket.getInputStream());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,7 +41,7 @@ public class FileClient {
     public void sendFileToServer(){
         File file = new File("Client/files/file.txt");
         //
-        System.out.println("Prepare files to send data");
+        logger.info("Preparing files to send data");
         byte[] fileNameBytes = file.getName().getBytes(StandardCharsets.UTF_8);
         int fileNameLength = file.getName().length();
         //
@@ -46,14 +50,14 @@ public class FileClient {
             byte[] fileContentBytes = new byte[(int) file.length()];
             fileIn.read(fileContentBytes);
             fileIn.close();
-            // wysyłamyy nazwę pliku
+            // sending file name
             dataOutputStream.writeInt(fileNameLength);
             dataOutputStream.write(fileNameBytes, 0, fileNameLength);
-            // wysyłanie zawartości
+            // sending data
             dataOutputStream.writeLong(file.length());
             dataOutputStream.write(fileContentBytes);
             dataOutputStream.flush();
-            System.out.println("Plik został wysłany");
+            logger.info("File has been sent");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -64,7 +68,7 @@ public class FileClient {
     public void getFileFromServer(){
         try {
             int fileNameLength = dataInputStream.readInt();
-            // sprawdzam czy przesłano nazwę pliku
+            // Checking if file name is corret
             if (fileNameLength > 0){
                 byte[] fileNameBytes = new byte[fileNameLength];
                 dataInputStream.readFully(fileNameBytes);
@@ -73,7 +77,7 @@ public class FileClient {
                         fileNameLength,
                         StandardCharsets.UTF_8);
                 long fileContentLength = dataInputStream.readLong();
-                // sprawdzam czy plik ma jakąś zawartość
+                // Checking if file is not empty
                 if (fileContentLength > 0){
                     byte[] fileContentBytes = new byte[(int) fileContentLength];
                     dataInputStream.readFully(fileContentBytes);
@@ -82,12 +86,12 @@ public class FileClient {
                     fileOut.write(fileContentBytes);
                     fileOut.flush();
                     fileOut.close();
-                    System.out.println("Zapisano nowy plik o nazwie " + fileName);
+                    logger.info("Saving file:  " + fileName);
                 }else{
-                    System.out.println("Utworzę pusty plik");
+                    logger.info("Creating empty file");
                 }
             }else{
-                System.out.println("nie przekazano pliku");
+                logger.info("File hasn't been sent");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,10 +101,10 @@ public class FileClient {
     public void disconnect(){
         if (!socket.isClosed()){
             try {
-                this.dataInputStream.close();
-                this.dataOutputStream.close();
-                this.socket.close();
-                System.out.println("Połączenie zakończone ");
+                dataInputStream.close();
+                dataOutputStream.close();
+                socket.close();
+                logger.info("Finished connection");
             } catch (IOException e) {
                 e.printStackTrace();
             }

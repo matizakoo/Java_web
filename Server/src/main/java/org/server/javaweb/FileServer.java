@@ -1,5 +1,8 @@
 package org.server.javaweb;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,11 +14,12 @@ public class FileServer {
     private DataOutputStream dataOutputStream;
     private DataInputStream dataInputStream;
     private String defaultLocation;
+    private Logger logger = LoggerFactory.getLogger(FileServer.class);
 
     public FileServer(int port){
         try {
-            this.serverSocket = new ServerSocket(port);
-            this.defaultLocation = "Server/filesserver/";
+            serverSocket = new ServerSocket(port);
+            defaultLocation = "Server/filesserver/";
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -24,12 +28,12 @@ public class FileServer {
     public void serverConnection() {
         System.out.println("korzystam z adresu" + serverSocket.getInetAddress().getHostAddress());
         while (true) {
-            System.out.println("Oczekuje na klienta");
+            logger.info("Waiting for client");
             try {
-                this.socket = serverSocket.accept();
-                this.dataInputStream = new DataInputStream(socket.getInputStream());
-                this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                System.out.println("Połączenie nawiązane z adresu " + socket.getInetAddress().getHostAddress());
+                socket = serverSocket.accept();
+                dataInputStream = new DataInputStream(socket.getInputStream());
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                logger.info("Connected with: " + socket.getInetAddress().getHostAddress());
                 getFileFromClient();
 //                Thread.sleep(500);
                 sendFileToClient();
@@ -46,7 +50,7 @@ public class FileServer {
     public void sendFileToClient(){
         File file = new File( defaultLocation + "text.txt");
         //
-        System.out.println("Przygotowania do wysłania pliku");
+        logger.info("Preparing to send data");
         byte[] fileNameBytes = file.getName().getBytes(StandardCharsets.UTF_8);
         int fileNameLength = file.getName().length();
         //
@@ -62,7 +66,7 @@ public class FileServer {
             dataOutputStream.writeLong(file.length());
             dataOutputStream.write(fileContentBytes);
             dataOutputStream.flush();
-            System.out.println("Plik został wysłany");
+            logger.info("File has been sent");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -91,12 +95,12 @@ public class FileServer {
                     fileOut.write(fileContentBytes);
                     fileOut.flush();
                     fileOut.close();
-                    System.out.println("Zapisano nowy plik o nazwie " + fileName);
+                    logger.info("New file has been saved " + fileName);
                 }else{
-                    System.out.println("Utworzę pusty plik");
+                    logger.info("Creating new empty file");
                 }
             }else{
-                System.out.println("nie przekazano pliku");
+                logger.info("File hasn't been transfered");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -104,11 +108,11 @@ public class FileServer {
     }
 
     public void clientClose(){
-        if(!this.socket.isClosed()){
+        if(!socket.isClosed()){
             try {
-                this.dataOutputStream.close();
-                this.dataInputStream.close();
-                this.socket.close();
+                dataOutputStream.close();
+                dataInputStream.close();
+                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

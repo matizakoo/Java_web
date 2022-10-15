@@ -1,5 +1,9 @@
 package org.client.javaweb;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +17,7 @@ public class Client {
     private Socket socket;
     private String host;
     private int port;
+    private Logger logger = LoggerFactory.getLogger(Client.class);
 
     public Client(String h, int p){
         this.host = h;
@@ -22,9 +27,9 @@ public class Client {
     public void connect(){
         try {
             InetAddress address = InetAddress.getByName(host);
-            this.socket = new Socket(address, this.port);
+            socket = new Socket(address, port);
             if (!socket.isClosed()){
-                System.out.println("Udało się nawiązać połączenie ");
+                logger.info("Connected with client");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,7 +67,7 @@ public class Client {
         if (!socket.isClosed()){
             try {
                 socket.close();
-                System.out.println("Połączenie zakończone ");
+                logger.info("Finished connection");
             } catch (IOException e) {
                 e.printStackTrace();
             }

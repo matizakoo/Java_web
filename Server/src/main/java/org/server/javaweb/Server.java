@@ -1,5 +1,8 @@
 package org.server.javaweb;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 public class Server {
     private ServerSocket serverSocket;
     private Socket socket;
+    private Logger logger = LoggerFactory.getLogger(Server.class);
 
     public Server(int port){
         try {
@@ -22,10 +26,10 @@ public class Server {
 
     public void serverConnection(){
         while(true){
-            System.out.println("Oczekuje na klienta");
+            logger.info("Waiting for client");
             try {
-                this.socket = serverSocket.accept();
-                System.out.println("Połączenie nawiązane");
+                socket = serverSocket.accept();
+                logger.info("Connected");
                 serverMessage();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -40,18 +44,19 @@ public class Server {
                     socket.getInputStream(), StandardCharsets.UTF_8
             ));
 
-            String tekst;
-            writer.println("Witaj przedstaw się: ");
+            String text;
+            writer.println("Hello. Who are you?");
             while(true){
-                tekst = reader.readLine();
-                if (tekst.equals("e")){
+                text = reader.readLine();
+                if (text.equals("e")){
                     System.out.println("klient kończy połączenie");
+                    logger.info("Client has disconnected");
                     writer.close();
                     reader.close();
                     break;
                 }
-                System.out.println(tekst);
-                writer.println("Re: " + tekst);
+                System.out.println(text);
+                writer.println("Re: " + text);
             }
             clientClose();
 
@@ -61,9 +66,9 @@ public class Server {
     }
 
     public void clientClose(){
-        if(!this.socket.isClosed()){
+        if(!socket.isClosed()){
             try {
-                this.socket.close();
+                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
