@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 public class FileServer {
     private ServerSocket serverSocket;
@@ -16,10 +17,10 @@ public class FileServer {
     private String defaultLocation;
     private Logger logger = LoggerFactory.getLogger(FileServer.class);
 
-    public FileServer(int port){
+    public FileServer(int port, String defaultLocation){
         try {
-            serverSocket = new ServerSocket(port);
-            defaultLocation = "Server/filesserver/";
+            this.serverSocket = new ServerSocket(port);
+            this.defaultLocation = defaultLocation;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,6 +47,37 @@ public class FileServer {
 
     public void sendFileToClient(){
         File file = new File( defaultLocation + "text.txt");
+        //
+        logger.info("Preparing to send data");
+        byte[] fileNameBytes = file.getName().getBytes(StandardCharsets.UTF_8);
+        int fileNameLength = file.getName().length();
+        //
+        try {
+            FileInputStream fileIn = new FileInputStream(file);
+            byte[] fileContentBytes = new byte[(int) file.length()];
+            fileIn.read(fileContentBytes);
+            fileIn.close();
+            // wysyłamyy nazwę pliku
+            dataOutputStream.writeInt(fileNameLength);
+            dataOutputStream.write(fileNameBytes, 0, fileNameLength);
+            // wysyłanie zawartości
+            dataOutputStream.writeLong(file.length());
+            dataOutputStream.write(fileContentBytes);
+            dataOutputStream.flush();
+            logger.info("File has been sent");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendOneFileToClient(File fileExpected){
+        if(!fileExpected.exists()){
+            logger.info("File doesn't exists");
+            return;
+        }
+        File file = fileExpected;
         //
         logger.info("Preparing to send data");
         byte[] fileNameBytes = file.getName().getBytes(StandardCharsets.UTF_8);

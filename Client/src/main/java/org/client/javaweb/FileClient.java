@@ -8,6 +8,10 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class FileClient {
     private Socket socket;
@@ -109,5 +113,24 @@ public class FileClient {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void getFileFromServerX(){
+        Scanner scanner1 = new Scanner(System.in);
+        String s1 = scanner1.nextLine();
+        Path path1 = Path.of("Server//filesserver" + s1);
+        File file1 = new File(path1.toUri());
+        PackageZIP packageZIP = new PackageZIP();
+        if (file1.exists()){
+            packageZIP.unpackageArchive(path1, "noweArchiwum.zip");
+            // tworzenie nowego katalogu do rozpakowania
+        } else {
+            try {
+                packageZIP.unpackageArchive(Files.createDirectory(Paths.get(path1.toUri())), "noweArchiwum.zip");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 }

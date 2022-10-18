@@ -5,7 +5,7 @@ public class Main {
         //        Server s = new Server(5501);
 //        s.serverConnection();
         // uruchominei aplikacji serwerowej do przekazywania plików
-        FileServer fs = new FileServer(5501);
+        FileServer fs = new FileServer(5501,"Server/filesserver/");
         fs.serverConnection();
     }
 }

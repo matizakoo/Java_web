@@ -1,15 +1,15 @@
-package org.client.javaweb;
+package tasks;
 
+import org.client.javaweb.PackageZIP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Task1 {
-    Logger logger = LoggerFactory.getLogger(Task1.class);
+public class Task1a {
+    Logger logger = LoggerFactory.getLogger(Task1a.class);
     //a
     public void a(String path) throws FileNotFoundException {
         PackageZIP packageZIP = new PackageZIP();
