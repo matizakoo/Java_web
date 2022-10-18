@@ -35,6 +35,24 @@ public class PackageZIP {
         }
     }
 
+    public void packageArchiveFile(File files) throws FileNotFoundException {
+        try {
+            ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream("compressedFile.zip"));
+            zipOut.setLevel(9);
+            zipOut.setMethod(ZipOutputStream.DEFLATED);
+            ZipEntry zipEntry = new ZipEntry(files.getName());
+            zipOut.putNextEntry(zipEntry);
+            FileInputStream fileIn = new FileInputStream(files);
+            zipOut.write(fileIn.readAllBytes());
+            fileIn.close();
+            zipOut.closeEntry();
+            zipOut.close();
+            logger.info("Archieved: " + files.getName());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void unpackageArchive(Path location, String zipName){
         try{
             ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipName));
